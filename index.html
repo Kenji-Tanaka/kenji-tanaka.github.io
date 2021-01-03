@@ -1,74 +1,25 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="utf-8" />
-    <title>Go WebAssembly</title>
-	<style>
-		body, input {
-			background-color: black;
-			color: lime;
-			font-family: 'Consolas', monospace;
-			margin: 10pt;
-		}
-	</style>
-	<link rel="shortcut icon" href="img/icon.ico" type="image/x-icon">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>kenji-tanaka.github.io</title>
+    <base href="/" />
+    <link href="css/bootstrap/bootstrap.min.css" rel="stylesheet" />
+    <link href="css/app.css" rel="stylesheet" />
+    <link href="kenji-tanaka.github.io.styles.css" rel="stylesheet" />
 </head>
+
 <body>
-    <h1>Mit WebAssembly kann man rechnen!</h1>
-	
-	<p>
-		Berechne n! mit n =<input type="number" id="input" min="0" value="1337" disabled="true"/> <input type="checkbox" id="hex" value="false" disabled="true">Hex-Formatierung</input>
-	</p>
-	
-	<p>
-		<div>
-			<span id="sub">1337</span>! = <span id="output" style="width: 100%; overflow-wrap: break-word;">?</span>
-		</div>
-	</p>
+    <div id="app">Loading...</div>
+
+    <div id="blazor-error-ui">
+        An unhandled error has occurred.
+        <a href="" class="reload">Reload</a>
+        <a class="dismiss">🗙</a>
+    </div>
+    <script src="_framework/blazor.webassembly.js"></script>
 </body>
-
-<script src="wasm.js"></script>
-<script>
-		const input = document.getElementById("input");
-		const output = document.getElementById("output");
-		const button = document.getElementById("runButton");
-		const sub = document.getElementById("sub");
-		const hex = document.getElementById("hex");
-		
-		if (!WebAssembly.instantiateStreaming) {
-            WebAssembly.instantiateStreaming = async (resp, importObject) => {
-                const source = await (await resp).arrayBuffer();
-                return await WebAssembly.instantiate(source, importObject);
-            };
-        }
-
-        const go = new Go();
-        let inst;
-
-        WebAssembly.instantiateStreaming(fetch("lib.wasm"), go.importObject).then(
-            result => {
-                inst = result.instance;
-				go.run(inst);
-				
-                input.disabled = false;
-				hex.disabled = false;
-				
-				run();
-            }
-        );
-			
-        function run() {
-			if (!global.factorial) { return; }
-			
-			const n = Number(input.value);
-			const formatHex = hex.checked;
-			sub.innerText = n;
-			const result = global.factorial(n, formatHex);;
-			output.innerText = result;
-        }
-		
-		input.oninput = _ => run();
-		hex.onchange = _ => run();
-</script>
 
 </html>
